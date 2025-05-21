@@ -447,14 +447,15 @@ namespace BetterJoyForCemu {
                 for (int i = 0; i < 100; ++i) {
                     resp = Subcommand(0x02, Array.Empty<byte>(), 0, false, 200);
                     
-                    if (resp.Length >= 15 && resp[15] == 0x03) {
-                        this.isLeft = true;
-                        this.isPro = true;
-                        this.isNes = true;
-                        break;
-                    }
-                    
-                    if (resp[15] == 0x02) {
+                    if (resp.Length >= 20 && resp[0] == 0x21 && resp[14] == 0x02)
+                    {
+                        if (resp[17] == 0x0A || resp[17] == 0x09) //NES controllers share the Right hardware ID of the right joycon, but respond here differently.
+                        {
+                            this.isLeft = true;
+                            this.isPro = true;
+                            this.isNes = true;
+                        }
+
                         break;
                     }
                 }
