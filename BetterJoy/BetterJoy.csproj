@@ -31,9 +31,6 @@
     <ItemGroup>
 		<None Include=".editorconfig" />
 		<None Include="Properties\app.manifest" />
-		<None Include="App.config">
-            <SubType>Designer</SubType>
-        </None>
 		
         <Content Include="..\dist\! Install the drivers in the Drivers folder">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -115,4 +112,14 @@
 	<ItemGroup>
 	  <EditorConfigFiles Remove=".editorconfig" />
 	</ItemGroup>
+
+    <!-- Ensure appsettings.jsonc is always copied -->
+    <ItemGroup>
+        <None Update="appsettings.jsonc">
+            <!-- Copy to obj\bin while you’re debugging -->
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <!-- Copy to publish folder for dotnet publish / Publish-SingleFile -->
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </None>
+    </ItemGroup>
 </Project>

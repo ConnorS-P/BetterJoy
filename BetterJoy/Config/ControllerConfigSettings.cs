@@ -34,8 +34,8 @@ public sealed record ControllerConfigSettings : SettingsFromFile
     public bool HomeLongPowerOff { get; init; } = true;
     public bool HomeLEDOn { get; init; } = true;
     public long PowerOffInactivityMins { get; init; } = -1;
-    public bool SwapAB { get; set; } = false;
-    public bool SwapXY { get; set; } = false;
+    public bool SwapAB { get; init; } = false;
+    public bool SwapXY { get; init; } = false;
     public bool UseFilteredMotion { get; init; } = true;
     public Joycon.DebugType DebugType { get; init; } = Joycon.DebugType.None;
     public Joycon.Orientation DoNotRejoin { get; init; } = Joycon.Orientation.None;

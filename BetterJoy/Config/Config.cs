@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.Configuration;
+using System.Threading;
 
 namespace BetterJoy.Config;
 
@@ -7,7 +8,7 @@ public abstract class Config<T>(Logger? logger = null) where T : SettingsFromFil
 {
     public bool ShowErrors = true;
 
-    protected volatile  T _settings = new();
+    protected volatile T _settings = new();
 
     public T Settings => _settings;
 
