@@ -1,5 +1,5 @@
-using System;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading;
 
 namespace BetterJoy.Config;

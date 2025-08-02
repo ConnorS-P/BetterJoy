@@ -2047,7 +2047,7 @@ public class Joycon
             var cal = _stickCal;
             var dz = _deadZone;
             var range = _range;
-            var antiDeadzone = Config.Settings.StickLeftAntiDeadzone;
+            var antiDeadzone = Config.Settings.StickLeftAntiDeadZone;
 
             if (_SticksCalibrated)
             {
@@ -2063,7 +2063,7 @@ public class Joycon
                 cal = _stick2Cal;
                 dz = _deadZone2;
                 range = _range2;
-                antiDeadzone = Config.Settings.StickRightAntiDeadzone;
+                antiDeadzone = Config.Settings.StickRightAntiDeadZone;
 
                 if (_SticksCalibrated)
                 {

@@ -11,6 +11,6 @@ public sealed record ProgramConfigSettings : SettingsFromFile
     public bool MotionServer { get; init; } = true;
     public IPAddress IP { get; init; } = IPAddress.Loopback;
     public int Port { get; init; } = 26760;
-        
+
     public override string ConfigSection => "Program";
 }

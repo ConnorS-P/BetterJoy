@@ -15,8 +15,8 @@ public sealed record ControllerConfigSettings : SettingsFromFile
     public float StickLeftRange { get; init; } = 0.90f;
     public float StickRightRange { get; init; } = 0.90f;
     public bool SticksSquared { get; init; } = false;
-    public ImmutableArray<float> StickLeftAntiDeadzone { get; init; } = [0.0f, 0.0f];
-    public ImmutableArray<float> StickRightAntiDeadzone { get; init; } = [0.0f, 0.0f];
+    public ImmutableArray<float> StickLeftAntiDeadZone { get; init; } = [0.0f, 0.0f];
+    public ImmutableArray<float> StickRightAntiDeadZone { get; init; } = [0.0f, 0.0f];
     public float AHRSBeta { get; init; } = 0.05f;
     public float ShakeDelay { get; init; } = 200;
     public bool ShakeInputEnabled { get; init; } = false;
