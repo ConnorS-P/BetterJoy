@@ -12,6 +12,7 @@ using Nefarius.ViGEm.Client.Targets.DualShock4;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -271,7 +272,7 @@ public class Joycon
             _buttonsDownTimestamp[i] = -1;
         }
 
-        _AHRS = new MadgwickAHRS(0.005f, Config.AHRSBeta);
+        _AHRS = new MadgwickAHRS(0.005f, Config.Settings.AHRSBeta);
 
         PadId = id;
         IsUSB = isUSB;
@@ -303,7 +304,7 @@ public class Joycon
     public bool IsJoined => Other is not null && !ReferenceEquals(Other, this);
 
     [MemberNotNullWhen(false, nameof(Other))]
-    public bool IsPrimaryGyro => !IsJoined || Config.GyroLeftHanded == IsLeft;
+    public bool IsPrimaryGyro => !IsJoined || Config.Settings.GyroLeftHanded == IsLeft;
 
 
     public bool IsDeviceReady => State > Status.Dropped;
@@ -379,33 +380,33 @@ public class Joycon
 
     public void ReceiveRumble(Xbox360FeedbackReceivedEventArgs e)
     {
-        if (!Config.EnableRumble)
+        if (!Config.Settings.EnableRumble)
         {
             return;
         }
 
         DebugPrint("Rumble data Received: XInput", DebugType.Rumble);
-        SetRumble(Config.LowFreq, Config.HighFreq, e.SmallMotor / 255f, e.LargeMotor / 255f);
+        SetRumble(Config.Settings.LowFreqRumble, Config.Settings.HighFreqRumble, e.SmallMotor / 255f, e.LargeMotor / 255f);
 
         if (IsJoined)
         {
-            Other.SetRumble(Config.LowFreq, Config.HighFreq, e.SmallMotor / 255f, e.LargeMotor / 255f);
+            Other.SetRumble(Config.Settings.LowFreqRumble, Config.Settings.HighFreqRumble, e.SmallMotor / 255f, e.LargeMotor / 255f);
         }
     }
 
     public void Ds4_FeedbackReceived(DualShock4FeedbackReceivedEventArgs e)
     {
-        if (!Config.EnableRumble)
+        if (!Config.Settings.EnableRumble)
         {
             return;
         }
 
         DebugPrint("Rumble data Received: DS4", DebugType.Rumble);
-        SetRumble(Config.LowFreq, Config.HighFreq, e.SmallMotor / 255f, e.LargeMotor / 255f);
+        SetRumble(Config.Settings.LowFreqRumble, Config.Settings.HighFreqRumble, e.SmallMotor / 255f, e.LargeMotor / 255f);
 
         if (IsJoined)
         {
-            Other.SetRumble(Config.LowFreq, Config.HighFreq, e.SmallMotor / 255f, e.LargeMotor / 255f);
+            Other.SetRumble(Config.Settings.LowFreqRumble, Config.Settings.HighFreqRumble, e.SmallMotor / 255f, e.LargeMotor / 255f);
         }
     }
 
@@ -421,14 +422,14 @@ public class Joycon
             return true;
         }
 
-        if (Config.DebugType == DebugType.None)
+        if (Config.Settings.DebugType == DebugType.None)
         {
             return false;
         }
 
         return type == DebugType.All ||
-               type == Config.DebugType ||
-               Config.DebugType == DebugType.All;
+               type == Config.Settings.DebugType ||
+               Config.Settings.DebugType == DebugType.All;
     }
     private void DebugPrint<T>(T stringifyable, DebugType type)
     {
@@ -930,18 +931,18 @@ public class Joycon
 
     public bool IsViGEmSetup()
     {
-        return (!Config.ShowAsXInput || OutXbox.IsConnected()) && (!Config.ShowAsDs4 || OutDs4.IsConnected());
+        return (!Config.Settings.ShowAsXInput || OutXbox.IsConnected()) && (!Config.Settings.ShowAsDs4 || OutDs4.IsConnected());
     }
 
     public void ConnectViGEm()
     {
-        if (Config.ShowAsXInput)
+        if (Config.Settings.ShowAsXInput)
         {
             DebugPrint("Connect virtual xbox controller.", DebugType.Comms);
             OutXbox.Connect();
         }
 
-        if (Config.ShowAsDs4)
+        if (Config.Settings.ShowAsDs4)
         {
             DebugPrint("Connect virtual DS4 controller.", DebugType.Comms);
             OutDs4.Connect();
@@ -1102,7 +1103,7 @@ public class Joycon
 
     private void DetectShake()
     {
-        if (!Config.ShakeInputEnabled || !IsPrimaryGyro)
+        if (!Config.Settings.ShakeInputEnabled || !IsPrimaryGyro)
         {
             _hasShaked = false;
             return;
@@ -1123,8 +1124,8 @@ public class Joycon
         if (!_hasShaked)
         {
             // Shake detection logic
-            var isShaking = _motion.Accelerometer.LengthSquared() >= Config.ShakeSensitivity;
-            if (isShaking && (currentShakeTime >= _shakedTime + Config.ShakeDelay || _shakedTime == 0))
+            var isShaking = _motion.Accelerometer.LengthSquared() >= Config.Settings.ShakeSensitivity;
+            if (isShaking && (currentShakeTime >= _shakedTime + Config.Settings.ShakeDelay || _shakedTime == 0))
             {
                 _shakedTime = currentShakeTime;
                 _hasShaked = true;
@@ -1168,7 +1169,7 @@ public class Joycon
             }
             else
             {
-                if (Config.DragToggle)
+                if (Config.Settings.DragToggle)
                 {
                     if (!up)
                     {
@@ -1386,7 +1387,7 @@ public class Joycon
         {
             bool powerOff = false;
 
-            if (Config.HomeLongPowerOff && _buttons[powerOffButton])
+            if (Config.Settings.HomeLongPowerOff && _buttons[powerOffButton])
             {
                 var powerOffPressedDurationMs = TimestampToMs(timestampNow - _buttonsDownTimestamp[powerOffButton]);
                 if (powerOffPressedDurationMs > 2000)
@@ -1395,10 +1396,10 @@ public class Joycon
                 }
             }
 
-            if (Config.PowerOffInactivityMins > 0)
+            if (Config.Settings.PowerOffInactivityMins > 0)
             {
                 var timeSinceActivityMs = TimestampToMs(timestampNow - _timestampActivity);
-                if (timeSinceActivityMs > Config.PowerOffInactivityMins * 60 * 1000)
+                if (timeSinceActivityMs > Config.Settings.PowerOffInactivityMins * 60 * 1000)
                 {
                     powerOff = true;
                 }
@@ -1421,7 +1422,7 @@ public class Joycon
     // Must be done by all controllers when any button is updated (in the case they are joined)
     private void DoThingsWithButtonsEachController()
     {
-        if (Config.ChangeOrientationDoubleClick && IsJoycon && !_calibrateSticks && !_calibrateMotion)
+        if (Config.Settings.ChangeOrientationDoubleClick && IsJoycon && !_calibrateSticks && !_calibrateMotion)
         {
             const int MaxClickDelayMs = 300;
 
@@ -1442,17 +1443,17 @@ public class Joycon
 
         if (HandleJoyAction("swap_ab", out int button) && IsButtonDown(button))
         {
-            Config.SwapAB = !Config.SwapAB;
+            Config.ToggleSwapAB();
         }
 
         if (HandleJoyAction("swap_xy", out button) && IsButtonDown(button))
         {
-            Config.SwapXY = !Config.SwapXY;
+            Config.ToggleSwapXY();
         }
 
         if (HandleJoyAction("active_gyro", out button))
         {
-            if (Config.GyroHoldToggle)
+            if (Config.Settings.GyroHoldToggle)
             {
                 if (IsButtonDown(button))
                 {
@@ -1472,7 +1473,7 @@ public class Joycon
             }
         }
 
-        if (IsPrimaryGyro && Config.ExtraGyroFeature == "mouse")
+        if (IsPrimaryGyro && Config.Settings.ExtraGyroFeature == "mouse")
         {
             // reset mouse position to centre of primary monitor
             if (HandleJoyAction("reset_mouse", out button) &&
@@ -1501,14 +1502,14 @@ public class Joycon
         {
             int dy;
 
-            if (Config.UseFilteredMotion)
+            if (Config.Settings.UseFilteredMotion)
             {
-                dy = (int)(Config.GyroAnalogSensitivity * (_curRotation[0] - _curRotation[3]));
+                dy = (int)(Config.Settings.GyroAnalogSensitivity * (_curRotation[0] - _curRotation[3]));
             }
             else
             {
                 float dt = _AHRS.SamplePeriod;
-                dy = (int)(Config.GyroAnalogSensitivity * (_motion.Gyroscope.Y * dt));
+                dy = (int)(Config.Settings.GyroAnalogSensitivity * (_motion.Gyroscope.Y * dt));
             }
 
             if (_buttons[(int)Button.Shoulder2])
@@ -1546,45 +1547,45 @@ public class Joycon
         {
             float dt = _AHRS.SamplePeriod;
 
-            if (Config.ExtraGyroFeature.StartsWith("joy"))
+            if (Config.Settings.ExtraGyroFeature.StartsWith("joy"))
             {
                 if (Settings.Value("active_gyro") == "0" || ActiveGyro)
                 {
                     GetMainAndOtherController(out Joycon mainController, out var _);
-                    ref var controlStick = ref (Config.ExtraGyroFeature == "joy_left" ? ref mainController._stick : ref mainController._stick2);
+                    ref var controlStick = ref (Config.Settings.ExtraGyroFeature == "joy_left" ? ref mainController._stick : ref mainController._stick2);
 
                     float dx, dy;
-                    if (Config.UseFilteredMotion)
+                    if (Config.Settings.UseFilteredMotion)
                     {
-                        dx = Config.GyroStickSensitivity[0] * (_curRotation[1] - _curRotation[4]); // yaw
-                        dy = -(Config.GyroStickSensitivity[1] * (_curRotation[0] - _curRotation[3])); // pitch
+                        dx = Config.Settings.GyroStickSensitivity[0] * (_curRotation[1] - _curRotation[4]); // yaw
+                        dy = -(Config.Settings.GyroStickSensitivity[1] * (_curRotation[0] - _curRotation[3])); // pitch
                     }
                     else
                     {
-                        dx = Config.GyroStickSensitivity[0] * (_motion.Gyroscope.Z * dt); // yaw
-                        dy = -(Config.GyroStickSensitivity[1] * (_motion.Gyroscope.Y * dt)); // pitch
+                        dx = Config.Settings.GyroStickSensitivity[0] * (_motion.Gyroscope.Z * dt); // yaw
+                        dy = -(Config.Settings.GyroStickSensitivity[1] * (_motion.Gyroscope.Y * dt)); // pitch
                     }
 
-                    controlStick.X = Math.Clamp(controlStick.X / Config.GyroStickReduction + dx, -1.0f, 1.0f);
-                    controlStick.Y = Math.Clamp(controlStick.Y / Config.GyroStickReduction + dy, -1.0f, 1.0f);
+                    controlStick.X = Math.Clamp(controlStick.X / Config.Settings.GyroStickReduction + dx, -1.0f, 1.0f);
+                    controlStick.Y = Math.Clamp(controlStick.Y / Config.Settings.GyroStickReduction + dy, -1.0f, 1.0f);
                 }
             }
-            else if (Config.ExtraGyroFeature == "mouse")
+            else if (Config.Settings.ExtraGyroFeature == "mouse")
             {
                 // gyro data is in degrees/s
                 if (Settings.Value("active_gyro") == "0" || ActiveGyro)
                 {
                     int dx, dy;
 
-                    if (Config.UseFilteredMotion)
+                    if (Config.Settings.UseFilteredMotion)
                     {
-                        dx = (int)(Config.GyroMouseSensitivity[0] * (_curRotation[1] - _curRotation[4])); // yaw
-                        dy = (int)-(Config.GyroMouseSensitivity[1] * (_curRotation[0] - _curRotation[3])); // pitch
+                        dx = (int)(Config.Settings.GyroMouseSensitivity[0] * (_curRotation[1] - _curRotation[4])); // yaw
+                        dy = (int)-(Config.Settings.GyroMouseSensitivity[1] * (_curRotation[0] - _curRotation[3])); // pitch
                     }
                     else
                     {
-                        dx = (int)(Config.GyroMouseSensitivity[0] * (_motion.Gyroscope.Z * dt));
-                        dy = (int)-(Config.GyroMouseSensitivity[1] * (_motion.Gyroscope.Y * dt));
+                        dx = (int)(Config.Settings.GyroMouseSensitivity[0] * (_motion.Gyroscope.Z * dt));
+                        dy = (int)-(Config.Settings.GyroMouseSensitivity[1] * (_motion.Gyroscope.Y * dt));
                     }
 
                     WindowsInput.Simulate.Events().MoveBy(dx, dy).Invoke();
@@ -1677,7 +1678,7 @@ public class Joycon
             }
 
             var subCommandSent = false;
-            var homeLEDOn = Config.HomeLEDOn;
+            var homeLEDOn = Config.Settings.HomeLEDOn;
 
             if ((oldHomeLEDOn != homeLEDOn) ||
                 (homeLEDOn && timeSinceHomeLight.ElapsedMilliseconds > SendHomeLightIntervalMs))
@@ -2046,7 +2047,7 @@ public class Joycon
             var cal = _stickCal;
             var dz = _deadZone;
             var range = _range;
-            var antiDeadzone = Config.StickLeftAntiDeadzone;
+            var antiDeadzone = Config.Settings.StickLeftAntiDeadzone;
 
             if (_SticksCalibrated)
             {
@@ -2062,7 +2063,7 @@ public class Joycon
                 cal = _stick2Cal;
                 dz = _deadZone2;
                 range = _range2;
-                antiDeadzone = Config.StickRightAntiDeadzone;
+                antiDeadzone = Config.Settings.StickRightAntiDeadzone;
 
                 if (_SticksCalibrated)
                 {
@@ -2357,7 +2358,7 @@ public class Joycon
         Log("Ready.");
     }
 
-    private void CalculateStickCenter(TwoAxisUShort vals, StickLimitsCalibration cal, float deadzone, float range, float[] antiDeadzone, ref Stick stick)
+    private void CalculateStickCenter(TwoAxisUShort vals, StickLimitsCalibration cal, float deadzone, float range, ImmutableArray<float> antiDeadzone, ref Stick stick)
     {
         float dx = vals.X - cal.XCenter;
         float dy = vals.Y - cal.YCenter;
@@ -2391,7 +2392,7 @@ public class Joycon
             normalizedX *= normalizedMagnitudeX / magnitude;
             normalizedY *= normalizedMagnitudeY / magnitude;
 
-            if (!Config.SticksSquared || normalizedX == 0f || normalizedY == 0f)
+            if (!Config.Settings.SticksSquared || normalizedX == 0f || normalizedY == 0f)
             {
                 stick.X = normalizedX;
                 stick.Y = normalizedY;
@@ -2535,7 +2536,7 @@ public class Joycon
 
     private bool UseGyroAnalogSliders()
     {
-        return Config.GyroAnalogSliders && MotionSupported() && (!IsJoycon || Other != null);
+        return Config.Settings.GyroAnalogSliders && MotionSupported() && (!IsJoycon || Other != null);
     }
 
     private bool DumpCalibrationData()
@@ -2951,14 +2952,14 @@ public class Joycon
         var sliderVal = _sliderVal;
 
         var gyroAnalogSliders = UseGyroAnalogSliders();
-        var swapAB = Config.SwapAB;
-        var swapXY = Config.SwapXY;
+        var swapAB = Config.Settings.SwapAB;
+        var swapXY = Config.Settings.SwapXY;
 
         if (other != null && !isLeft)
         {
             gyroAnalogSliders = other.UseGyroAnalogSliders();
-            swapAB = other.Config.SwapAB;
-            swapXY = other.Config.SwapXY;
+            swapAB = other.Config.Settings.SwapAB;
+            swapXY = other.Config.Settings.SwapXY;
         }
 
         if (isJoycon)
@@ -3128,14 +3129,14 @@ public class Joycon
         var sliderVal = _sliderVal;
 
         var gyroAnalogSliders = UseGyroAnalogSliders();
-        var swapAB = Config.SwapAB;
-        var swapXY = Config.SwapXY;
+        var swapAB = Config.Settings.SwapAB;
+        var swapXY = Config.Settings.SwapXY;
 
         if (other != null && !isLeft)
         {
             gyroAnalogSliders = other.UseGyroAnalogSliders();
-            swapAB = other.Config.SwapAB;
-            swapXY = other.Config.SwapXY;
+            swapAB = other.Config.Settings.SwapAB;
+            swapXY = other.Config.Settings.SwapXY;
         }
 
         if (isJoycon)
@@ -3372,9 +3373,9 @@ public class Joycon
         Config.ShowErrors = showErrors;
         Config.Update();
 
-        if (oldConfig.ShowAsXInput != Config.ShowAsXInput)
+        if (oldConfig.Settings.ShowAsXInput != Config.Settings.ShowAsXInput)
         {
-            if (Config.ShowAsXInput)
+            if (Config.Settings.ShowAsXInput)
             {
                 OutXbox.Connect();
             }
@@ -3384,9 +3385,9 @@ public class Joycon
             }
         }
 
-        if (oldConfig.ShowAsDs4 != Config.ShowAsDs4)
+        if (oldConfig.Settings.ShowAsDs4 != Config.Settings.ShowAsDs4)
         {
-            if (Config.ShowAsDs4)
+            if (Config.Settings.ShowAsDs4)
             {
                 OutDs4.Connect();
             }
@@ -3398,30 +3399,30 @@ public class Joycon
 
         if (!CalibrationDataSupported())
         {
-            if (oldConfig.StickLeftDeadzone != Config.StickLeftDeadzone)
+            if (oldConfig.Settings.StickLeftDeadzone != Config.Settings.StickLeftDeadzone)
             {
                 _deadZone = StickDeadZoneCalibration.FromConfigLeft(Config);
             }
 
-            if (oldConfig.StickRightDeadzone != Config.StickRightDeadzone)
+            if (oldConfig.Settings.StickRightDeadzone != Config.Settings.StickRightDeadzone)
             {
                 _deadZone2 = StickDeadZoneCalibration.FromConfigRight(Config);
             }
 
-            if (oldConfig.StickLeftRange != Config.StickLeftRange)
+            if (oldConfig.Settings.StickLeftRange != Config.Settings.StickLeftRange)
             {
                 _range = StickRangeCalibration.FromConfigLeft(Config);
             }
 
-            if (oldConfig.StickRightRange != Config.StickRightRange)
+            if (oldConfig.Settings.StickRightRange != Config.Settings.StickRightRange)
             {
                 _range2 = StickRangeCalibration.FromConfigRight(Config);
             }
         }
 
-        if (oldConfig.AllowCalibration != Config.AllowCalibration)
+        if (oldConfig.Settings.AllowCalibration != Config.Settings.AllowCalibration)
         {
-            SetCalibration(Config.AllowCalibration);
+            SetCalibration(Config.Settings.AllowCalibration);
         }
     }
 

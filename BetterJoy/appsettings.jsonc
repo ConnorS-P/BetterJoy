@@ -1,0 +1,226 @@
+{
+    /* --------------------------------------------------------- */
+    /*  PROGRAM-LEVEL SETTINGS                                   */
+    /* --------------------------------------------------------- */
+    "Program": {
+        // Motion Server IP: the default is localhost; you can change it to 0.0.0.0 (all interfaces) or a specific LAN IP
+        //         which is **useful if you want to access the server from another computer in a network.** Default: 127.0.0.1
+        "IP": "127.0.0.1",
+
+        // Motion Server port: the default is 26760; if it conflicts with another server set it to anything valid
+        //         but in that case also change the port in your application accordingly. Default: 26760
+        "Port": 26760,
+
+        // Whether the Motion Server is enabled or not. Default: true
+        "MotionServer": true,
+
+        // Determines whether or not to use HidHide (improves compatibility with other programs, like Steam, when set to "false")
+        //         When "true", BetterJoy will hide the Pro/Joycons from other programs to prevent glitching out on exit and to prevent DI/XI clashes in certain programs
+        // Default: true
+        "UseHIDHide": true,
+
+        // Determines whether or not to keep HidHide enabled when the program exit.
+        //         When "true", BetterJoy will keep hiding the Pro/Joycons from other programs after closing. To revert, set this to "false" and "UseHideHide" to "true" and exit BetterJoy.
+        // Default: true
+        "HIDHideAlwaysOn": false,
+
+        // Determines whether or not the program should purge the affected devices list upon exit
+        //         Should prevent any more issues of the controller being unusable after the program exit (even though this can be fixed if you read the README)
+        // Default: false
+        "PurgeAffectedDevices": false,
+
+        // Determines whether or not HidHide's process whitelist is purged on start-up
+        //         Can interfere with other programs using HidHide
+        // Default: false
+        "PurgeWhitelist": false
+    },
+
+    /* --------------------------------------------------------- */
+    /*  CONTROLLER-LEVEL SETTINGS                                */
+    /* --------------------------------------------------------- */
+    "Controller": {
+        // The controller's HD rumble settings for the low/high frequency rumble. Change the pitch of the rumble.
+        //         Set LowFreqRumble from 41 to 626; HighFreqRumble from 82 to 1252. Default: 160 and 320
+        //         To have "weaker" rumble, try setting the low/high to 40/120
+        "LowFreqRumble": 160,
+        "HighFreqRumble": 320,
+
+        // Rumble Setting. Turns rumble on or off.
+        //         On is "true"; off is "false". Default: true
+        "EnableRumble": true,
+
+        // Enables a input when shaking a controller, only works with DS4 for now, replaces the touchpad input (Button 13 on DirectInput)
+        //         On is "true"; off is "false". Default: false
+        "ShakeInputEnabled": false,
+
+        // How sensitve the shake detection should be. Default: 10
+        "ShakeInputSensitivity": 10,
+
+        // How often should the shake input run in milliseconds.
+        //         Don't set this lower than 15
+        //         Default: 200
+        "ShakeInputDelay": 200,
+
+        // Swap A-B buttons; if on, this mimicks the (half of) Xbox layout by the button name, rather than by the physical layout.
+        //         Also swaps buttons when using "Also use for buttons/axes"
+        //         On is "true"; off is "false". Default: false
+        "SwapAB": false,
+
+        // Swap X-Y buttons; if on, this mimicks the (other half of) Xbox layout by the button name, rather than by the physical layout.
+        //         Also swaps buttons when using "Also use for buttons/axes"
+        //         On is "true"; off is "false". Default: false
+        "SwapXY": false,
+
+        // Allows for calibration of the controller's gyro. Adds a "Calibrate" button.
+        //         When "true", click the "Calibrate" button once to get gyro calibrate data.
+        //         When enabled, can only calibrate one controller at a time.
+        //         Default: true
+        "AllowCalibration": true,
+
+        // Set the deadzone for the left stick when not using the calibration datas embedded in the controller.
+        //         The value is a percentage (from 0.0 to 1.0).
+        //         Set to 0 to disable the deadzone.
+        //         Default: 0.15
+        "StickLeftDeadzone": 0.15,
+
+        // Set the deadzone for the right stick when not using the calibration datas embedded in the controller.
+        //         The value is a percentage (from 0.0 to 1.0).
+        //         Set to 0 to disable the deadzone.
+        //         Default: 0.15
+        "StickRightDeadzone": 0.15,
+
+        // Set the range for the left stick when not using the calibration datas embedded in the controller.
+        //         The value is a percentage (from 0.0 to 1.0).
+        //         Set to 1 to use the full range. 0.90 is equivalent to a 10% outer deadzone.
+        //         Default: 0.90
+        "StickLeftRange": 0.90,
+
+        // Set the range for the right stick when not using the calibration datas embedded in the controller.
+        //         The value is a percentage (from 0.0 to 1.0).
+        //         Set to 1 to use the full range. 0.90 is equivalent to a 10% outer deadzone.
+        //         Default: 0.90
+        "StickRightRange": 0.90,
+
+        // Set the anti-deadzone for the left stick. It sets the minimum value for the stick when outside the joystick deadzone.
+        //         The value is a percentage (from 0.0 to 1.0). You can specify separate values for X and Y axis using the format "0.0,0.0".
+        //         Set to 0 to disable the anti-deadzone.
+        //         Default: 0.0
+        "StickLeftAntiDeadzone": 0.0,
+
+        // Set the anti-deadzone for the right stick. It sets the minimum value for the stick when outside the joystick deadzone.
+        //         The value is a percentage (from 0.0 to 1.0). You can specify separate values for X and Y axis using the format "0.0,0.0".
+        //         Set to 0 to disable the anti-deadzone.
+        //         Default: 0.0
+        "StickRightAntiDeadzone": 0.0,
+
+        // Expand the range of the sticks from a circle to a square area.
+        //         Default: false
+        "SticksSquared": false,
+
+        // Allows use of gyroscope tilting to get full control of the slider values (big triggers)
+        //         Works on pro controller and joycons joined or in vertical.
+        //         Default: false
+        "GyroAnalogSliders": false,
+
+        // Change to -400 to change direction of tilt needed. Positive is ramp up if pointing up
+        //         Default: 400
+        "GyroAnalogSensitivity": 400,
+
+        // The program will keep the HOME button LED ring light on at all times.
+        //         Default: true
+        "HomeLEDOn": true,
+
+        // Determines whether or not to translate gyro movements into joystick ("joy") or mouse movement ("mouse"), or have no effect ("none")
+        //         When "joy_left" or "joy_right", turn gyro movements into respective left/right joystick (mouse-like) movements
+        //         When "mouse", turn gyro movements into mouse movement. Press either stick-button to reset to middle of primary display
+        //         Default: none
+        "ExtraGyroFeature": "none",
+
+        // Whether to use filtered motion or raw motion values (the latter is more responsive)
+        //         Default: true
+        "UseFilteredMotion": true,
+
+        // Beta value of AHRS. Affects divergence of filter
+        //         Default: 0.05
+        "AHRSBeta": 0.05,
+
+        // Sensitivity of gyro-to-mouse movements
+        //         You can specify separate values for X and Y axis using the format "0.0,0.0".
+        //         Default: 1200,800 (if using raw values, decrease by a factor of ~15)
+        "GyroMouseSensitivity": [ 1200, 800 ],
+
+        // Sensitivity of gyro-to-joystick movements
+        //         You can specify separate values for X and Y axis using the format "0.0,0.0".
+        //         Default: 40.0,10.0 (if using raw values, decrease by a factor of ~15: eg 2.6,0.6)
+        "GyroStickSensitivity": [ 40.0, 10.0 ],
+
+        // Stick range reduction when gyro-to-joystick is enabled and active; divides range by factor (so 1 is no change; 1.5 is halved range (with deadzone in mind))
+        //         Default: 1.5
+        "GyroStickReduction": 1.5,
+
+        // Gyro Hold/Toggle activation; true will require the mapped button to be continuously held down to keep gyro active
+        //         Default: true [hold], false [toggle]
+        "GyroHoldToggle": true,
+
+        // When two joycons are joined, it would take the gyro movement of the right joycon for GyroToJoyOrMouse and shake input. This swaps that
+        //         Default: false
+        "GyroLeftHanded": false,
+
+        // Changes drag behaviour.
+        //         Will only apply to mouse buttons being mapped
+        //         Default: false
+        "DragToggle": false,
+
+        // Determines whether or not the program will expose detected controllers as Xbox 360 controllers
+        //         When "false", BetterJoy is only usable with programs that support UDPServer.
+        //         Default: true
+        "ShowAsXInput": true,
+
+        // Have ShowAsXInput as false if using this
+        //         Default: false
+        "ShowAsDS4": false,
+
+        // Automatically power off bluetooth controllers at program exit
+        //         Default: false
+        "AutoPowerOff": false,
+
+        // Automatically power off bluetooth controllers after a period of inactivity (in minutes)
+        //         Default: 30 (-1 indicates infinite time)
+        "PowerOffInactivityMins": -1,
+
+        // Power off bluetooth controllers when Capture (left only) or Home (right only or combined) buttons are pressed for a long interval (2s)
+        //         Default: true
+        "HomeLongPowerOff": true,
+
+        // Double click sticks on joycons (L3, R3) to change joycon orientation
+        //         Default: true
+        "ChangeOrientationDoubleClick": true,
+
+        // Do not rejoin joycons
+        //         When 'none' joycons are automatically rejoined on connection
+        //         When 'horizontal' or 'vertical' joycons are never rejoined and will default to the horizontal/vertical orientation. Clicking on the joycon icon will change their orientation
+        //         Default: none
+        "DoNotRejoin": "none",
+
+        // Determines what type of debugging information to be printed
+        //         none
+        //         all
+        //         comms
+        //         threading
+        //         motion
+        //         rumble
+        //         shake
+        //         dev
+        //         Default: none
+        "DebugType": "none"
+    },
+
+    /* --------------------------------------------------------- */
+    /*  MAIN-FORM SETTINGS                                       */
+    /* --------------------------------------------------------- */
+    "MainForm": {
+        // Allows for calibration of the controller's gyro. Adds a "Calibrate" button. Default: true
+        "AllowCalibration": true
+    }
+}
+

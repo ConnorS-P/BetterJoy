@@ -30,12 +30,12 @@ public readonly struct StickRangeCalibration
 
     public static StickRangeCalibration FromConfigRight(ControllerConfig config)
     {
-        return new StickRangeCalibration(config.StickRightRange);
+        return new StickRangeCalibration(config.Settings.StickRightRange);
     }
 
     public static StickRangeCalibration FromConfigLeft(ControllerConfig config)
     {
-        return new StickRangeCalibration(config.StickLeftRange);
+        return new StickRangeCalibration(config.Settings.StickLeftRange);
     }
 
     public static implicit operator float(StickRangeCalibration range) => range._value;

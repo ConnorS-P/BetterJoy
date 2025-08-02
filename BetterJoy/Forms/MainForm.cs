@@ -62,7 +62,7 @@ public partial class MainForm : Form
         Config = new(_logger);
         Config.Update();
 
-        if (!Config.AllowCalibration)
+        if (!Config.Settings.AllowCalibration)
         {
             btn_calibrate.Hide();
         }
@@ -560,9 +560,9 @@ public partial class MainForm : Form
         var oldConfig = Config.Clone();
         Config.Update();
 
-        if (oldConfig.AllowCalibration != Config.AllowCalibration)
+        if (oldConfig.Settings.AllowCalibration != Config.Settings.AllowCalibration)
         {
-            btn_calibrate.Visible = Config.AllowCalibration;
+            btn_calibrate.Visible = Config.Settings.AllowCalibration;
         }
 
         await Program.ApplyConfig();

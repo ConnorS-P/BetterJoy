@@ -354,7 +354,7 @@ public class JoyconManager
         _form.AddController(controller);
 
         // attempt to auto join-up joycons on connection
-        var doNotRejoin = controller.Config.DoNotRejoin;
+        var doNotRejoin = controller.Config.Settings.DoNotRejoin;
         if (doNotRejoin != Joycon.Orientation.Horizontal)
         {
             bool joinSelf = doNotRejoin != Joycon.Orientation.None;
@@ -364,7 +364,7 @@ public class JoyconManager
             }
         }
 
-        controller.SetCalibration(_form.Config.AllowCalibration);
+        controller.SetCalibration(_form.Config.Settings.AllowCalibration);
 
         if (!controller.IsJoined || controller.IsLeft)
         {
@@ -711,7 +711,7 @@ public class JoyconManager
         {
             controller.StateChanged -= OnControllerStateChanged;
 
-            if (controller.Config.AutoPowerOff && !controller.IsUSB)
+            if (controller.Config.Settings.AutoPowerOff && !controller.IsUSB)
             {
                 controller.RequestPowerOff();
             }
@@ -722,7 +722,7 @@ public class JoyconManager
 
         foreach (var controller in Controllers)
         {
-            if (controller.Config.AutoPowerOff && !controller.IsUSB)
+            if (controller.Config.Settings.AutoPowerOff && !controller.IsUSB)
             {
                 controller.WaitPowerOff(timeoutPowerOff);
 
@@ -876,7 +876,7 @@ public class JoyconManager
                 int nbJoycons = Controllers.Count(j => j.IsJoycon);
 
                 // when we want to have a single joycon in vertical mode
-                bool joinSelf = nbJoycons == 1 || controller.Config.DoNotRejoin != Joycon.Orientation.None;
+                bool joinSelf = nbJoycons == 1 || controller.Config.Settings.DoNotRejoin != Joycon.Orientation.None;
 
                 if (JoinJoycon(controller, joinSelf))
                 {
@@ -987,13 +987,13 @@ internal class Program
         Mgr = new JoyconManager(_logger, _form);
         Server = new UdpServer(_logger, Mgr.Controllers);
 
-        if (!Config.MotionServer)
+        if (!Config.Settings.MotionServer)
         {
             _logger?.Log("Motion server is OFF.");
         }
         else
         {
-            Server.Start(Config.IP, Config.Port);
+            Server.Start(Config.Settings.IP, Config.Settings.Port);
         }
 
         UpdateInputEvents();
@@ -1007,7 +1007,7 @@ internal class Program
     {
         try
         {
-            if (!Config.UseHIDHide)
+            if (!Config.Settings.UseHIDHide)
             {
                 return;
             }
@@ -1020,13 +1020,13 @@ internal class Program
 
             _hidHideService.IsAppListInverted = false;
 
-            //if (Config.PurgeAffectedDevices)
+            //if (Config.Settings.PurgeAffectedDevices)
             //{
             //    hidHideService.ClearBlockedInstancesList();
             //    return;
             //}
 
-            if (Config.PurgeWhitelist)
+            if (Config.Settings.PurgeWhitelist)
             {
                 _hidHideService.ClearApplicationsList();
             }
@@ -1177,8 +1177,8 @@ internal class Program
                 foreach (var controller in Mgr.Controllers)
                 {
                     if (activeGyro) controller.ActiveGyro = true;
-                    if (swapAB) controller.Config.SwapAB = !controller.Config.SwapAB;
-                    if (swapXY) controller.Config.SwapXY = !controller.Config.SwapXY;
+                    if (swapAB) controller.Config.ToggleSwapAB();
+                    if (swapXY) controller.Config.ToggleSwapXY();
                 }
             }
             return;
@@ -1232,8 +1232,8 @@ internal class Program
                 foreach (var controller in Mgr.Controllers)
                 {
                     if (activeGyro) controller.ActiveGyro = true;
-                    if (swapAB) controller.Config.SwapAB = !controller.Config.SwapAB;
-                    if (swapXY) controller.Config.SwapXY = !controller.Config.SwapXY;
+                    if (swapAB) controller.Config.ToggleSwapAB();
+                    if (swapXY) controller.Config.ToggleSwapXY();
                 }
             }
             return;
@@ -1297,7 +1297,7 @@ internal class Program
 
             _hidHideService.RemoveApplicationPath(Environment.ProcessPath);
 
-            if (Config.PurgeAffectedDevices)
+            if (Config.Settings.PurgeAffectedDevices)
             {
                 foreach (var instance in _blockedDeviceInstances)
                 {
@@ -1305,7 +1305,7 @@ internal class Program
                 }
             }
 
-            if (Config.HIDHideAlwaysOn)
+            if (Config.Settings.HIDHideAlwaysOn)
             {
                 return;
             }
@@ -1429,27 +1429,27 @@ internal class Program
         var oldConfig = Config.Clone();
         Config.Update();
 
-        if (oldConfig.MotionServer != Config.MotionServer)
+        if (oldConfig.Settings.MotionServer != Config.Settings.MotionServer)
         {
-            if (Config.MotionServer)
+            if (Config.Settings.MotionServer)
             {
-                Server.Start(Config.IP, Config.Port);
+                Server.Start(Config.Settings.IP, Config.Settings.Port);
             }
             else
             {
                 await Server.Stop();
             }
         }
-        else if (!oldConfig.IP.Equals(Config.IP) ||
-                 oldConfig.Port != Config.Port)
+        else if (!oldConfig.Settings.IP.Equals(Config.Settings.IP) ||
+                 oldConfig.Settings.Port != Config.Settings.Port)
         {
             await Server.Stop();
-            Server.Start(Config.IP, Config.Port);
+            Server.Start(Config.Settings.IP, Config.Settings.Port);
         }
 
-        if (oldConfig.UseHIDHide != Config.UseHIDHide)
+        if (oldConfig.Settings.UseHIDHide != Config.Settings.UseHIDHide)
         {
-            if (Config.UseHIDHide)
+            if (Config.Settings.UseHIDHide)
             {
                 StartHIDHide();
             }
