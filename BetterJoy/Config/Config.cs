@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
-using System.ComponentModel.DataAnnotations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 
 namespace BetterJoy.Config;
@@ -19,7 +19,7 @@ public abstract class Config<T>(Logger? logger = null) where T : SettingsFromFil
         try
         {
             _settings = CoreConfig.ConfigRoot.GetRequiredSection(_settings.ConfigSection)
-                .Get<T>(o => 
+                .Get<T>(o =>
                     o.ErrorOnUnknownConfiguration = ShowErrors)!;
         }
         catch (Exception ex)
@@ -27,9 +27,9 @@ public abstract class Config<T>(Logger? logger = null) where T : SettingsFromFil
             if (ShowErrors)
             {
                 var tempSettings = CoreConfig.ConfigRoot.GetRequiredSection(_settings.ConfigSection).Get<T>()!;
-                
+
                 logger?.Log($"Update error for {typeof(T).Name}: {ex.Message}", Logger.LogLevel.Error);
-                
+
                 var results = new List<ValidationResult>();
                 if (!Validator.TryValidateObject(tempSettings, new ValidationContext(tempSettings), results, true))
                 {
