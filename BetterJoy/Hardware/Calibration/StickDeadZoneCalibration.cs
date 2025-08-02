@@ -30,12 +30,12 @@ public readonly struct StickDeadZoneCalibration
 
     public static StickDeadZoneCalibration FromConfigRight(ControllerConfig config)
     {
-        return new StickDeadZoneCalibration(config.Settings.StickRightDeadzone);
+        return new StickDeadZoneCalibration(config.Settings.StickRightDeadZone);
     }
 
     public static StickDeadZoneCalibration FromConfigLeft(ControllerConfig config)
     {
-        return new StickDeadZoneCalibration(config.Settings.StickLeftDeadzone);
+        return new StickDeadZoneCalibration(config.Settings.StickLeftDeadZone);
     }
 
     public static implicit operator float(StickDeadZoneCalibration deadZone) => deadZone._value;

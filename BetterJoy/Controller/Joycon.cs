@@ -16,6 +16,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -1124,8 +1125,8 @@ public class Joycon
         if (!_hasShaked)
         {
             // Shake detection logic
-            var isShaking = _motion.Accelerometer.LengthSquared() >= Config.Settings.ShakeSensitivity;
-            if (isShaking && (currentShakeTime >= _shakedTime + Config.Settings.ShakeDelay || _shakedTime == 0))
+            var isShaking = _motion.Accelerometer.LengthSquared() >= Config.Settings.ShakeInputSensitivity;
+            if (isShaking && (currentShakeTime >= _shakedTime + Config.Settings.ShakeInputDelay || _shakedTime == 0))
             {
                 _shakedTime = currentShakeTime;
                 _hasShaked = true;
@@ -1557,13 +1558,13 @@ public class Joycon
                     float dx, dy;
                     if (Config.Settings.UseFilteredMotion)
                     {
-                        dx = Config.Settings.GyroStickSensitivity[0] * (_curRotation[1] - _curRotation[4]); // yaw
-                        dy = -(Config.Settings.GyroStickSensitivity[1] * (_curRotation[0] - _curRotation[3])); // pitch
+                        dx = Config.Settings.GyroStickSensitivity.X * (_curRotation[1] - _curRotation[4]); // yaw
+                        dy = -(Config.Settings.GyroStickSensitivity.Y * (_curRotation[0] - _curRotation[3])); // pitch
                     }
                     else
                     {
-                        dx = Config.Settings.GyroStickSensitivity[0] * (_motion.Gyroscope.Z * dt); // yaw
-                        dy = -(Config.Settings.GyroStickSensitivity[1] * (_motion.Gyroscope.Y * dt)); // pitch
+                        dx = Config.Settings.GyroStickSensitivity.X * (_motion.Gyroscope.Z * dt); // yaw
+                        dy = -(Config.Settings.GyroStickSensitivity.Y * (_motion.Gyroscope.Y * dt)); // pitch
                     }
 
                     controlStick.X = Math.Clamp(controlStick.X / Config.Settings.GyroStickReduction + dx, -1.0f, 1.0f);
@@ -1579,13 +1580,13 @@ public class Joycon
 
                     if (Config.Settings.UseFilteredMotion)
                     {
-                        dx = (int)(Config.Settings.GyroMouseSensitivity[0] * (_curRotation[1] - _curRotation[4])); // yaw
-                        dy = (int)-(Config.Settings.GyroMouseSensitivity[1] * (_curRotation[0] - _curRotation[3])); // pitch
+                        dx = (int)(Config.Settings.GyroMouseSensitivity.X * (_curRotation[1] - _curRotation[4])); // yaw
+                        dy = (int)-(Config.Settings.GyroMouseSensitivity.Y * (_curRotation[0] - _curRotation[3])); // pitch
                     }
                     else
                     {
-                        dx = (int)(Config.Settings.GyroMouseSensitivity[0] * (_motion.Gyroscope.Z * dt));
-                        dy = (int)-(Config.Settings.GyroMouseSensitivity[1] * (_motion.Gyroscope.Y * dt));
+                        dx = (int)(Config.Settings.GyroMouseSensitivity.X * (_motion.Gyroscope.Z * dt));
+                        dy = (int)-(Config.Settings.GyroMouseSensitivity.Y * (_motion.Gyroscope.Y * dt));
                     }
 
                     WindowsInput.Simulate.Events().MoveBy(dx, dy).Invoke();
@@ -2358,7 +2359,7 @@ public class Joycon
         Log("Ready.");
     }
 
-    private void CalculateStickCenter(TwoAxisUShort vals, StickLimitsCalibration cal, float deadzone, float range, ImmutableArray<float> antiDeadzone, ref Stick stick)
+    private void CalculateStickCenter(TwoAxisUShort vals, StickLimitsCalibration cal, float deadzone, float range, Float2 antiDeadzone, ref Stick stick)
     {
         float dx = vals.X - cal.XCenter;
         float dy = vals.Y - cal.YCenter;
@@ -2379,14 +2380,14 @@ public class Joycon
             float normalizedMagnitudeX = Math.Min(1.0f, (magnitude - deadzone) / (range - deadzone));
             float normalizedMagnitudeY = normalizedMagnitudeX;
 
-            if (antiDeadzone[0] > 0.0f)
+            if (antiDeadzone.X > 0.0f)
             {
-                normalizedMagnitudeX = antiDeadzone[0] + (1.0f - antiDeadzone[0]) * normalizedMagnitudeX;
+                normalizedMagnitudeX = antiDeadzone.X + (1.0f - antiDeadzone.X) * normalizedMagnitudeX;
             }
 
-            if (antiDeadzone[1] > 0.0f)
+            if (antiDeadzone.Y > 0.0f)
             {
-                normalizedMagnitudeY = antiDeadzone[1] + (1.0f - antiDeadzone[1]) * normalizedMagnitudeY;
+                normalizedMagnitudeY = antiDeadzone.Y + (1.0f - antiDeadzone.Y) * normalizedMagnitudeY;
             }
 
             normalizedX *= normalizedMagnitudeX / magnitude;
@@ -3399,12 +3400,12 @@ public class Joycon
 
         if (!CalibrationDataSupported())
         {
-            if (oldConfig.Settings.StickLeftDeadzone != Config.Settings.StickLeftDeadzone)
+            if (oldConfig.Settings.StickLeftDeadZone != Config.Settings.StickLeftDeadZone)
             {
                 _deadZone = StickDeadZoneCalibration.FromConfigLeft(Config);
             }
 
-            if (oldConfig.Settings.StickRightDeadzone != Config.Settings.StickRightDeadzone)
+            if (oldConfig.Settings.StickRightDeadZone != Config.Settings.StickRightDeadZone)
             {
                 _deadZone2 = StickDeadZoneCalibration.FromConfigRight(Config);
             }

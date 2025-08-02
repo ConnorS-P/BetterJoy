@@ -49,7 +49,7 @@
         //         On is "true"; off is "false". Default: true
         "EnableRumble": true,
 
-        // Enables a input when shaking a controller, only works with DS4 for now, replaces the touchpad input (Button 13 on DirectInput)
+        // Enables an input when shaking a controller, only works with DS4 for now, replaces the touchpad input (Button 13 on DirectInput)
         //         On is "true"; off is "false". Default: false
         "ShakeInputEnabled": false,
 
@@ -81,13 +81,13 @@
         //         The value is a percentage (from 0.0 to 1.0).
         //         Set to 0 to disable the deadzone.
         //         Default: 0.15
-        "StickLeftDeadzone": 0.15,
+        "StickLeftDeadZone": 0.15,
 
         // Set the deadzone for the right stick when not using the calibration datas embedded in the controller.
         //         The value is a percentage (from 0.0 to 1.0).
         //         Set to 0 to disable the deadzone.
         //         Default: 0.15
-        "StickRightDeadzone": 0.15,
+        "StickRightDeadZone": 0.15,
 
         // Set the range for the left stick when not using the calibration datas embedded in the controller.
         //         The value is a percentage (from 0.0 to 1.0).
@@ -102,16 +102,16 @@
         "StickRightRange": 0.90,
 
         // Set the anti-deadzone for the left stick. It sets the minimum value for the stick when outside the joystick deadzone.
-        //         The values are a percentage (from 0.0 to 1.0). You can specify separate values for X and Y axis using the format [0.0, 0.0].
+        //         The values are a percentage (from 0.0 to 1.0). You can specify separate values for X and Y axis using the format { "X": 0.0, "Y": 0.0 }.
         //         Set to 0 to disable the anti-deadzone.
         //         Default: 0.0
-        "StickLeftAntiDeadZone": [0.0, 0.0],
+        "StickLeftAntiDeadZone": { "X": 0.0, "Y": 0.0 },
 
         // Set the anti-deadzone for the right stick. It sets the minimum value for the stick when outside the joystick deadzone.
-        //         The values are a percentage (from 0.0 to 1.0). You can specify separate values for X and Y axis using the format [0.0, 0.0].
+        //         The values are a percentage (from 0.0 to 1.0). You can specify separate values for X and Y axis using the format { "X": 0.0, "Y": 0.0 }.
         //         Set to 0 to disable the anti-deadzone.
         //         Default: 0.0
-        "StickRightAntiDeadZone": [0.0, 0.0],
+        "StickRightAntiDeadZone": { "X": 0.0, "Y": 0.0 },
 
         // Expand the range of the sticks from a circle to a square area.
         //         Default: false
@@ -145,14 +145,14 @@
         "AHRSBeta": 0.05,
 
         // Sensitivity of gyro-to-mouse movements
-        //         You can specify separate values for X and Y axis using the format [0.0,0.0].
+        //         You can specify separate values for X and Y axis using the format { "X": 0, "Y": 0 }.
         //         Default: 1200,800 (if using raw values, decrease by a factor of ~15)
-        "GyroMouseSensitivity": [ 1200, 800 ],
+        "GyroMouseSensitivity": { "X": 1200, "Y": 800 },
 
         // Sensitivity of gyro-to-joystick movements
-        //         You can specify separate values for X and Y axis using the format [0.0,0.0].
+        //         You can specify separate values for X and Y axis using the format { "X": 0.0, "Y": 0.0 }.
         //         Default: 40.0,10.0 (if using raw values, decrease by a factor of ~15: eg 2.6,0.6)
-        "GyroStickSensitivity": [ 40.0, 10.0 ],
+        "GyroStickSensitivity": { "X": 40.0, "Y": 10.0 },
 
         // Stick range reduction when gyro-to-joystick is enabled and active; divides range by factor (so 1 is no change; 1.5 is halved range (with deadzone in mind))
         //         Default: 1.5
